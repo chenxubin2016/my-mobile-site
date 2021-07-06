@@ -1,0 +1,21 @@
+@function black($opacity) {
+  @return rgba(0, 0, 0, $opacity);
+}
+
+@function white($opacity) {
+  @return rgba(255, 255, 255, $opacity);
+}
+
+@function str-replace($string, $to-replace, $replacement:'') {
+  $target-location: str-index($string, $to-replace);
+  @if $target-location == null {
+    @return $string;
+  }
+  $string-without-target: str-slice($string, 1, $target-location - 1) + str-slice($string, $target-location + 1);
+  $string: str-insert($string-without-target, $replacement, $target-location);
+  @return $string;
+}
+
+@function prefix-str() {
+  @return webkit ms o moz;
+}

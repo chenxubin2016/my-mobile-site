@@ -1,0 +1,163 @@
+@import "function-directives.scss";
+//flex 布局
+@mixin flex($justify:space-between,$items:center,$direction:row) {
+  display: flex;
+  justify-content: $justify;
+  align-items: $items;
+  flex-direction: $direction;
+  @content;
+}
+@mixin overflow($x:hidden,$y:hidden) {
+  overflow-x: $x;
+  overflow-y: $y;
+  -webkit-overflow-scrolling: touch;
+}
+
+//三角形样式
+@mixin triangle($width, $height, $color, $direction) {
+  $width: $width/2;
+  $color-border-style: $height solid $color;
+  $transparent-border-style: $width solid transparent;
+  height: 0;
+  width: 0;
+
+  @if $direction==up {
+    border-bottom: $color-border-style;
+    border-left: $transparent-border-style;
+    border-right: $transparent-border-style;
+  } @else if $direction==right {
+    border-left: $color-border-style;
+    border-top: $transparent-border-style;
+    border-bottom: $transparent-border-style;
+  } @else if $direction==down {
+    border-top: $color-border-style;
+    border-left: $transparent-border-style;
+    border-right: $transparent-border-style;
+  } @else if $direction==left {
+    border-right: $color-border-style;
+    border-top: $transparent-border-style;
+    border-bottom: $transparent-border-style;
+  }
+}
+
+//pc滚动条样式
+@mixin scrollBar {
+  &::-webkit-scrollbar-track-piece {
+    background: #d3dce6;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #99a9bf;
+    border-radius: 20px;
+  }
+}
+
+//清除浮动
+@mixin clearfix {
+  *zoom: 1;
+  &:before, &:after {
+    content: ' ';
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+//pc居中显示
+@mixin pct($pct) {
+  width: #{$pct};
+  position: relative;
+  margin: 0 auto;
+}
+
+//定位
+@mixin position($type, $top: null, $right: null, $bottom: null, $left: null) {
+  position: $type;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+
+@mixin size($width, $height: $width) {
+  width: $width;
+  height: $height;
+}
+
+@mixin prefix($property, $value, $prefixes: ()) {
+  @each $prefix in $prefixes {
+    -#{$prefix}-#{$property}: $value;
+  }
+  #{$property}: $value;
+}
+
+@mixin transform($transformation) {
+  @include prefix(transform, $transformation, prefix-str());
+}
+
+//动画名称
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  }
+}
+
+@mixin transition($time: 1s, $timing-function: ease-in-out) {
+  @include prefix(transition, all $time $timing-function, prefix-str());
+}
+
+@mixin scale($scale-change:1.1, $animation-properties: 1s ease-in-out) {
+  $alias: 'scale-' + str-replace($scale-change + '', '.', '-');
+
+  @include keyframes($alias) {
+    0%, 100% {
+      @include transform(scale(1));
+    }
+    50% {
+      @include transform(scale($scale-change));
+    }
+  }
+
+  @include prefix(animation, $alias $animation-properties, prefix-str());
+}
+
+@mixin fade($fade-from: 0, $fade-to: 1, $animation-properties: 1s ease) {
+  $alias: fade- + str-replace($fade-from + '', '.', '-') + '-' + str-replace($fade-to + '', '.', '-');
+  @include keyframes($alias) {
+    from {
+      @include opacity($fade-from);
+    }
+    to {
+      @include opacity($fade-to);
+    }
+  }
+  @include prefix(animation, $alias $animation-properties, prefix-str());
+}
+
+@mixin slide-in-from($slide-axis: x, $slide-offset: -100px, $animation-properties: 3s ease-out) {
+  $slide-start: if($slide-axis == x, translateX($slide-offset), translateY($slide-offset));
+  $slide-end: if($slide-axis == x, translateX(0), translateY(0));
+
+  @include keyframes(slide-in-#{$slide-axis}-#{$slide-offset}) {
+    0% {
+      @include opacity(0);
+      @include transform($slide-start);
+    }
+    75% {
+      @include transform($slide-end);
+    }
+    100% {
+      @include opacity(1);
+    }
+  }
+  @include prefix(animation, slide-in-#{$slide-axis}-#{$slide-offset} $animation-properties, prefix-str());
+}
+
